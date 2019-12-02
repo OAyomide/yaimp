@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import Header from '../components/Header/Header'
 import { Card, CardHeader } from 'reactstrap'
+import Footer from '../components/Footer/Footer'
 
 class HomeComponent extends Component {
   render() {
@@ -13,6 +14,9 @@ class HomeComponent extends Component {
               <span>Hello there!!</span>
             </CardHeader>
           </Card>
+        </div>
+        <div>
+          <Footer />
         </div>
       </div>
     )
