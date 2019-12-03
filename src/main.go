@@ -139,23 +139,37 @@ func sepiaEffect(img image.Image) image.Image {
 	return wImg
 }
 
+// monochrome creates a black and white effect on the image
+func monochrome(img image.Image) image.Image {
+	size := img.Bounds().Size()
+	rect := image.Rect(0, 0, size.X, size.Y)
+	wImg := image.NewRGBA(rect)
+
+	// looping through all the pixels in the image
+	for x := 0; x < size.X; x++ {
+		for y := 0; y < size.Y; y++ {
+			pixel := img.At(x, y)
+			originalColor := color.RGBAModel.Convert(pixel).(color.RGBA)
+
+			r := float64(originalColor.R) * 0.92126
+			g := float64(originalColor.G) * 0.97152
+			b := float64(originalColor.B) * 0.90722
+
+			grey := uint8((r + g + b) / 3)
+
+			c := color.RGBA{
+				R: grey, G: grey, B: grey, A: originalColor.A,
+			}
+
+			wImg.Set(x, y, c)
+		}
+	}
+
+	return wImg
+}
+
 func handleError(err error) {
 	if err != nil {
 		panic(err)
 	}
 }
-
-// func InitMemory(v js.Value, inputs []js.Value) interface{} {
-// 	buff := inputs[0].Int()
-// 	imgB := make([]uint8, buff)
-// 	Buff = imgB
-// 	MemBuff = &imgB
-// 	ln = buff
-
-// 	headerSlice := (*reflect.SliceHeader)(unsafe.Pointer(MemBuff))
-// 	pointr := uintptr(unsafe.Pointer(headerSlice.Data))
-// 	upoint = pointr
-// 	js.Global().Get("console").Call("log", "IMG POINTR SIZE", pointr)
-// 	js.Global().Call("extractBufferMem", pointr, buff)
-// 	return nil
-// }
