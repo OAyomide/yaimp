@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import Header from '../components/Header/Header'
 import { Card, CardHeader } from 'reactstrap'
 import Footer from '../components/Footer/Footer'
+import UploadImageComponent from '../components/Upload'
 
 class HomeComponent extends Component {
   render() {
@@ -15,6 +16,11 @@ class HomeComponent extends Component {
             </CardHeader>
           </Card>
         </div>
+
+        <div className="container">
+          <UploadImageComponent />
+        </div>
+
         <div>
           <Footer />
         </div>

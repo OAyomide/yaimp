@@ -54,7 +54,7 @@ func LoadAndProcessImage(v js.Value, inputs []js.Value) interface{} {
 	err = png.Encode(buf, img)
 	handleError(err)
 
-	// create a JS Uint8array destination Array. This is where we'll copy the bytes to our
+	// create a JS Uint8array destination Array. This is where we'll copy the bytes to which we're then returning. Its the array buffer of the manipulated image
 	uintdestination := js.Global().Get("Uint8Array").New(bufferSize)
 	_ = js.CopyBytesToJS(uintdestination, buf.Bytes())
 
