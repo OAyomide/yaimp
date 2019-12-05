@@ -24,7 +24,8 @@ class UploadImageComponent extends Component {
       inst: null,
       memoryByte: null,
       bytes: null,
-      isProcessing: false
+      isProcessing: false,
+      effect: 'monochrome' // using monochrome as the default effect
     }
     this.handleChangeStatus = this.handleChangeStatus.bind(this)
   }
@@ -79,13 +80,17 @@ class UploadImageComponent extends Component {
     })
   }
 
+  handleEffectValueChange = e => {
+    let value = e.target.value
+    this.setState({ effect: value })
+  }
 
   renderEffectsDropdown() {
     return (
       <div>
         <FormGroup>
           <Label for="select">Effect</Label>
-          <Input type="select" name="select" id="statusselect" required onChange={e => console.log(e)} defaultValue="Queued">
+          <Input type="select" name="select" id="effectselect" required onChange={e => this.handleEffectValueChange(e)} defaultValue="Queued">
             <option value="monochrome" onClick={e => console.log(`changed`)}>Monochrome</option>
             <option value="half-monochrome">Half Monochrome</option>
             <option value="sepia">Sepia</option>
@@ -117,6 +122,7 @@ class UploadImageComponent extends Component {
                   maxFiles={1}
                 />
               </CardBody>
+              {this.renderEffectsDropdown()}
             </Col>
 
             <Col>
