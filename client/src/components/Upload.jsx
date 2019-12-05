@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Card, CardHeader, CardBody, CardFooter, Row, Col, Container } from "reactstrap";
+import { Card, CardHeader, CardBody, CardFooter, Row, Col, Container, Media, FormGroup, Label, Input } from "reactstrap";
 import Dropzone from 'react-dropzone-uploader'
 import 'react-dropzone-uploader/dist/styles.css'
 
@@ -17,9 +17,29 @@ function UInt8ArrayToBase64(buffer) {
 
 class UploadImageComponent extends Component {
   constructor(props) {
+    super(props)
     this.state = {
-      manipulatedImage: ''
+      manipulatedImage: '',
+      mod: null,
+      inst: null,
+      memoryByte: null,
+      bytes: null,
+      isProcessing: false
     }
+    this.handleChangeStatus = this.handleChangeStatus.bind(this)
+  }
+
+  async componentDidMount() {
+    let { instance, module } = await WebAssembly.instantiateStreaming(fetch("main.wasm"), window.go.importObject)
+    let memByte = new Uint8Array(instance.exports.mem.buffer)
+    this.setState({
+      mod: module,
+      inst: instance,
+      memoryByte: memByte
+    })
+
+    window.memoryBuff = memByte
+    await window.go.run(instance)
   }
 
   // handleChangeStatus method handles the conversion of our image to UInt8Array which we pass to the WebAssembly exported function that applies the effect we want
@@ -44,8 +64,39 @@ class UploadImageComponent extends Component {
     }
   }
 
+  // changes the message text of the Dropzone upload component
+  handleUploadTextChange(files, extras) {
+    if (extras.reject) {
+      return `Images only`
+    }
+    return 'Upload an image'
+  }
+
+  handleChange = (e) => {
+    e.preventDefault();
+    this.setState({
+      message: e.target.value
+    })
+  }
+
+
+  renderEffectsDropdown() {
+    return (
+      <div>
+        <FormGroup>
+          <Label for="select">Effect</Label>
+          <Input type="select" name="select" id="statusselect" required onChange={e => console.log(e)} defaultValue="Queued">
+            <option value="monochrome" onClick={e => console.log(`changed`)}>Monochrome</option>
+            <option value="half-monochrome">Half Monochrome</option>
+            <option value="sepia">Sepia</option>
+          </Input>
+        </FormGroup>
+      </div>
+    )
+  }
 
   render() {
+    const { manipulatedImage, isProcessing } = this.state
     return (
       <div className="images-container">
         <Container fluid={true}>
@@ -75,7 +126,8 @@ class UploadImageComponent extends Component {
                 </CardHeader>
               </Card>
               <CardBody>
-
+                {isProcessing ? <span>Processing your image...</span> : (!manipulatedImage ? <span>Please Upload an Image. Manipulated image appears here</span> :
+                  <Media src={`data:image/png;base64,${manipulatedImage}`} alt="" style={{ height: '100%', width: '100%' }}></Media>)}
               </CardBody>
             </Col>
           </Row>
