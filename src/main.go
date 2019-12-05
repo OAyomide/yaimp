@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"image"
 	"image/color"
+	"image/jpeg"
 	"image/png"
 	"syscall/js"
 )
@@ -43,7 +44,7 @@ func LoadAndProcessImage(v js.Value, inputs []js.Value) interface{} {
 
 	// register the format we're expecting
 	image.RegisterFormat("png", "png", png.Decode, png.DecodeConfig)
-
+	image.RegisterFormat("jpeg", "jpeg", jpeg.Decode, jpeg.DecodeConfig)
 	decodedImage, format, err := image.Decode(bytes.NewReader(bufferDestn))
 	js.Global().Get("console").Call("log", "THE FORMAT IS", format)
 	handleError(err)

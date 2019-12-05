@@ -9,17 +9,17 @@ class HomeComponent extends Component {
     return (
       <div>
         <Header />
-        <div>
+        {/* <div>
           <Card>
             <CardHeader>
               <span>Hello there!!</span>
             </CardHeader>
           </Card>
-        </div>
+        </div> */}
 
-        <div className="container">
-          <UploadImageComponent />
-        </div>
+        {/* <div className="container"> */}
+        <UploadImageComponent />
+        {/* </div> */}
 
         <div>
           <Footer />
