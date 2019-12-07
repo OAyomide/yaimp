@@ -62,6 +62,8 @@ class UploadImageComponent extends Component {
         let image64 = UInt8ArrayToBase64(WasmManipulatedImage)
         this.setState({ manipulatedImage: image64, bytes: event.target.result.byteLength, isProcessing: false })
       }
+    } else if (status === 'removed') {
+      this.setState({ isProcessing: false })
     }
   }
 
