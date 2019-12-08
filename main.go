@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -11,6 +12,7 @@ func main() {
 	// get port env var
 	osport := os.Getenv("port")
 
+	fmt.Printf("PORT on heroku is: %s", osport)
 	if osport == "" {
 		port = "11000"
 	} else {
