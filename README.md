@@ -12,7 +12,7 @@ You can also open developer tools to see console logs and whats going on.
 This was just a first attempt at using WASM with Go and React for something "real". There are lots of improvements to be made and I'd give my best to actively work on this. I plan to learn more and this project is my ticket to that.
 
 Below are the lists of the things to be done. The list isnt exhaustive:
-- [ ] Better UI. Responsive Image rendering.
+- [x] Better UI. Responsive Image rendering.
 
 - [ ] Support Multiple Image manipulation at once --stress testing so as to utilize the speed WebAssembly promises 🙃😉! 
 
