@@ -25,7 +25,9 @@ class UploadImageComponent extends Component {
       memoryByte: null,
       bytes: null,
       isProcessing: false,
-      effect: 'monochrome' // using monochrome as the default effect
+      effect: 'monochrome', // using monochrome as the default effect,
+      disabledEffect: true,
+      imageMeta: null
     }
     this.handleChangeStatus = this.handleChangeStatus.bind(this)
   }
@@ -50,23 +52,26 @@ class UploadImageComponent extends Component {
       isProcessing: true
     })
     if (status === 'done') {
-      let fileBlobURL = meta.previewUrl
-      let fetchBlobURL = await fetch(fileBlobURL)
-      let fileBlob = await fetchBlobURL.blob()
-      let fileReader = new FileReader()
-      fileReader.readAsArrayBuffer(fileBlob)
-      fileReader.onload = event => {
-        let memBuf = new Uint8Array(event.target.result)
-        window.imageBuff = memBuf
-        let WasmManipulatedImage = window.loadImg(memBuf.length, memBuf)
-        let image64 = UInt8ArrayToBase64(WasmManipulatedImage)
-        this.setState({ manipulatedImage: image64, bytes: event.target.result.byteLength, isProcessing: false })
-      }
+      this.setState({ isProcessing: false, disabledEffect: false, imageMeta: meta })
     } else if (status === 'removed') {
       this.setState({ isProcessing: false })
     }
   }
 
+  async handleManipulationTrigger(meta) {
+    let fileBlobURL = meta.previewUrl
+    let fetchBlobURL = await fetch(fileBlobURL)
+    let fileBlob = await fetchBlobURL.blob()
+    let fileReader = new FileReader()
+    fileReader.readAsArrayBuffer(fileBlob)
+    fileReader.onload = event => {
+      let memBuf = new Uint8Array(event.target.result)
+      window.imageBuff = memBuf
+      let WasmManipulatedImage = window.loadImg(memBuf.length, memBuf)
+      let image64 = UInt8ArrayToBase64(WasmManipulatedImage)
+      this.setState({ manipulatedImage: image64, bytes: event.target.result.byteLength, isProcessing: false, disabledEffect: false })
+    }
+  }
   // changes the message text of the Dropzone upload component
   handleUploadTextChange(files, extras) {
     if (extras.reject) {
@@ -84,7 +89,10 @@ class UploadImageComponent extends Component {
 
   handleEffectValueChange = e => {
     let value = e.target.value
-    this.setState({ effect: value })
+    let { imageMeta } = this.state
+    this.setState({ effect: value, isProcessing: true, disabledEffect: true }, async () => {
+      this.handleManipulationTrigger(imageMeta)
+    })
   }
 
   renderEffectsDropdown() {
@@ -92,7 +100,7 @@ class UploadImageComponent extends Component {
       <div>
         <FormGroup>
           <Label for="select">Effect</Label>
-          <Input type="select" name="select" id="effectselect" required onChange={e => this.handleEffectValueChange(e)} defaultValue="Queued">
+          <Input type="select" name="select" id="effectselect" required onChange={e => this.handleEffectValueChange(e)} defaultValue="monochrome" disabled={this.state.disabledEffect}>
             <option value="monochrome" onClick={e => console.log(`changed`)}>Monochrome</option>
             <option value="half-monochrome">Half Monochrome</option>
             <option value="sepia">Sepia</option>
