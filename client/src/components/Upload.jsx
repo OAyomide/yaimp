@@ -26,7 +26,7 @@ class UploadImageComponent extends Component {
       bytes: null,
       isProcessing: false,
       effect: 'monochrome', // using monochrome as the default effect,
-      disabledEffect: true,
+      disabledEffect: true, // 💡 an idea could be to make this reflexive of isProcessing i.e make it depend on the state of isProcessing instead of manually specifying the current state everywhere... dunno, just an idea. current implementationw works just great
       imageMeta: null
     }
     this.handleChangeStatus = this.handleChangeStatus.bind(this)
@@ -67,7 +67,7 @@ class UploadImageComponent extends Component {
     fileReader.onload = event => {
       let memBuf = new Uint8Array(event.target.result)
       window.imageBuff = memBuf
-      let WasmManipulatedImage = window.loadImg(memBuf.length, memBuf)
+      let WasmManipulatedImage = window.LoadAndProcessImage(memBuf.length, this.state.effect, memBuf)
       let image64 = UInt8ArrayToBase64(WasmManipulatedImage)
       this.setState({ manipulatedImage: image64, bytes: event.target.result.byteLength, isProcessing: false, disabledEffect: false })
     }
@@ -100,8 +100,9 @@ class UploadImageComponent extends Component {
       <div>
         <FormGroup>
           <Label for="select">Effect</Label>
-          <Input type="select" name="select" id="effectselect" required onChange={e => this.handleEffectValueChange(e)} defaultValue="monochrome" disabled={this.state.disabledEffect}>
-            <option value="monochrome" onClick={e => console.log(`changed`)}>Monochrome</option>
+          <Input type="select" name="select" id="effectselect" required onChange={e => this.handleEffectValueChange(e)} defaultValue="" disabled={this.state.disabledEffect}>
+            <option value="">Select</option>
+            <option value="monochrome">Monochrome</option>
             <option value="half-monochrome">Half Monochrome</option>
             <option value="sepia">Sepia</option>
           </Input>

@@ -11,7 +11,6 @@ import (
 )
 
 var c chan bool
-var inputSourceImg image.Image
 
 func init() {
 	fmt.Println("Hello, WebAssembly! This is to tell us everything works!")
@@ -20,7 +19,7 @@ func init() {
 
 func main() {
 	js.Global().Set("sayHelloJS", js.FuncOf(SayHello))
-	js.Global().Set("loadImg", js.FuncOf(LoadAndProcessImage))
+	js.Global().Set("LoadAndProcessImage", js.FuncOf(LoadAndProcessImage))
 	// TODO: prevent exiting the channel even if there was an error and the app crashes.
 	println("Done.. done.. done...")
 	<-c
@@ -38,7 +37,8 @@ func SayHello(jsV js.Value, inputs []js.Value) interface{} {
 // LoadAndProcessImage loads the image and processes it, then return the manipulated image as an array buffer.
 func LoadAndProcessImage(v js.Value, inputs []js.Value) interface{} {
 	bufferSize := inputs[0].Int()
-	buffer := inputs[1]
+	effect := inputs[1].String()
+	buffer := inputs[2]
 	bufferDestn := make([]byte, bufferSize)
 	_ = js.CopyBytesToGo(bufferDestn, buffer)
 
@@ -48,9 +48,18 @@ func LoadAndProcessImage(v js.Value, inputs []js.Value) interface{} {
 	decodedImage, format, err := image.Decode(bytes.NewReader(bufferDestn))
 	js.Global().Get("console").Call("log", "THE FORMAT IS", format)
 	handleError(err)
-	inputSourceImg = decodedImage
-	img := decolorizeHalf(decodedImage)
+	var img image.Image
 
+	switch effect {
+	case "monochrome":
+		img = monochrome(decodedImage)
+	case "half-monochrome":
+		img = decolorizeHalf(decodedImage)
+	case "sepia":
+		img = sepiaEffect(decodedImage)
+	default:
+		monochrome(decodedImage)
+	}
 	buf := new(bytes.Buffer)
 	err = png.Encode(buf, img)
 	handleError(err)
