@@ -127,7 +127,7 @@ class UploadImageComponent extends Component {
                 <Dropzone
                   onChangeStatus={this.handleChangeStatus}
                   onSubmit={this.handleImageSubmit}
-                  accept='image/png'
+                  accept='image/*'
                   styles={{ previewImage: { maxHeight: '70px', maxWidth: '70px' }, dropzone: { height: 200 }, inputLabel: (files, extra) => extra.reject ? {} : {}, inputLabelWithFiles: (files, extra) => { } }}
                   inputContent={this.handleUploadTextChange}
                   maxFiles={1}
