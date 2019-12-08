@@ -10,9 +10,7 @@ import (
 func main() {
 	var port string
 	// get port env var
-	osport := os.Getenv("port")
-
-	fmt.Printf("PORT on heroku is: %s", osport)
+	osport := os.Getenv("PORT")
 	if osport == "" {
 		port = "11000"
 	} else {
