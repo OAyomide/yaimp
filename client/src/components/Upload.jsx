@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Card, CardHeader, CardBody, CardFooter, Row, Col, Container, Media, FormGroup, Label, Input } from "reactstrap";
+import { Card, CardHeader, CardBody, CardFooter, Row, Col, Container, Media, FormGroup, Label, Input, Button } from "reactstrap";
 import Dropzone from 'react-dropzone-uploader'
 import 'react-dropzone-uploader/dist/styles.css'
 
@@ -111,6 +111,19 @@ class UploadImageComponent extends Component {
     )
   }
 
+  async handleManipulatedImageDownload(e) {
+    e.preventDefault()
+    const { manipulatedImage } = this.state
+    let blob = await (await fetch(`data:application/octet-stream;base64,${manipulatedImage}`)).blob()
+    const url = window.URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.setAttribute('download', 'yaimpManipulated.png')
+    document.body.appendChild(link)
+    link.click()
+  }
+
+
   render() {
     const { manipulatedImage, isProcessing } = this.state
     return (
@@ -146,6 +159,10 @@ class UploadImageComponent extends Component {
                 {isProcessing ? <span>Processing your image...</span> : (!manipulatedImage ? <span>Please Upload an Image. Manipulated image appears here</span> :
                   <Media src={`data:image/png;base64,${manipulatedImage}`} alt="" style={{ height: '100%', width: '100%' }}></Media>)}
               </CardBody>
+
+              <CardFooter>
+                <Button type='submit' color='success' disabled={!manipulatedImage ? true : false} onClick={async e => await this.handleManipulatedImageDownload(e)}>Download</Button>
+              </CardFooter>
             </Col>
           </Row>
         </Container>
