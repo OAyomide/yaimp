@@ -46,6 +46,8 @@ func LoadAndProcessImage(v js.Value, inputs []js.Value) interface{} {
 	image.RegisterFormat("png", "png", png.Decode, png.DecodeConfig)
 	image.RegisterFormat("jpeg", "jpeg", jpeg.Decode, jpeg.DecodeConfig)
 	decodedImage, format, err := image.Decode(bytes.NewReader(bufferDestn))
+	js.Global().Get("console").Call("log", "WIDTH and HRIGHT OF INPUT IMAGE BEFORE MANIPULATION", decodedImage.Bounds().Size().X, decodedImage.Bounds().Size().Y)
+
 	js.Global().Get("console").Call("log", "THE FORMAT IS", format)
 	handleError(err)
 	var img image.Image
@@ -67,7 +69,6 @@ func LoadAndProcessImage(v js.Value, inputs []js.Value) interface{} {
 	// create a JS Uint8array destination Array. This is where we'll copy the bytes to which we're then returning. Its the array buffer of the manipulated image
 	uintdestination := js.Global().Get("Uint8Array").New(bufferSize)
 	_ = js.CopyBytesToJS(uintdestination, buf.Bytes())
-
 	// return the manipulate image Uint8Array
 	return uintdestination
 }
@@ -76,6 +77,7 @@ func LoadAndProcessImage(v js.Value, inputs []js.Value) interface{} {
 func decolorizeHalf(img image.Image) image.Image {
 	// TODO: this could be optimized.. like using bit shifting to reduce length of the code.
 	size := img.Bounds().Size()
+	js.Global().Get("console").Call("log", "SIze of input inmage in decolireze is", size.X, size.Y)
 	rect := image.Rect(0, 0, size.X, size.Y)
 	wImg := image.NewRGBA(rect)
 
@@ -105,7 +107,7 @@ func decolorizeHalf(img image.Image) image.Image {
 			wImg.Set(x, y, c)
 		}
 	}
-
+	js.Global().Get("console").Call("log", "SIze of input image after applying effect is", wImg.Bounds().Size().X, wImg.Bounds().Size().Y)
 	return wImg
 }
 

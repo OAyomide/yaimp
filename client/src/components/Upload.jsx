@@ -128,9 +128,9 @@ class UploadImageComponent extends Component {
     const { manipulatedImage, isProcessing } = this.state
     return (
       <div className="images-container">
-        <Container fluid={true}>
+        <Container>
           <Row>
-            <Col md={6} sm={12}>
+            <Col md={6} sm={12} xs={12}>
               <Card>
                 <CardHeader>
                   <span>Please Upload your image here</span>
@@ -157,7 +157,7 @@ class UploadImageComponent extends Component {
               </Card>
               <CardBody>
                 {isProcessing ? <span>Processing your image...</span> : (!manipulatedImage ? <span>Please Upload an Image. Manipulated image appears here</span> :
-                  <Media src={`data:image/png;base64,${manipulatedImage}`} alt="" style={{ height: '100%', width: '100%' }}></Media>)}
+                  <Media src={`data:image/png;base64,${manipulatedImage}`} alt="" style={{ height: '100%', width: '100%', position: 'relative' }}></Media>)}
               </CardBody>
 
               <CardFooter>
